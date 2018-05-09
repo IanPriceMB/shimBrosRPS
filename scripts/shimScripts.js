@@ -23,7 +23,7 @@ function frontPage(){
     $("#forMusic").append("<source id='src' src='SBRPS/SoundEffects/MainMusic.mp3'>");
 //puttin in a footer for some extra info 
     $("body").append("<div class='footer'>");
-    $(".footer").append("<h6 class='forFooter>");
+    $(".footer").append("<h6 class='forFooter'>");
     $(".forFooter").text("Created by: Ian 'MaddBuddha' Price");
 }
 frontPage();
@@ -61,11 +61,6 @@ $(".godCont").append("<div class='heroChoice'>");
     $(".godCont").append("<div class='infoDiv'>");
     $(".infoDiv").append("<h3 class='info'>");
     $(".info").text("Enter your name into the name field and select your character to start!");
-
-//puttin in a footer for some extra info 
-    $("body").append("<div class='footer'>");
-    $(".footer").append("<h6 class='forFooter>");
-    $(".forFooter").text("Created by: Ian 'MaddBuddha' Price");
 }
 
 //making sure our player picks a name and a hero before moving to the game screen
@@ -95,6 +90,10 @@ $("body").on("click", ".hero", function(){
 //creating and populating the actual game screen for RPS
 function gameScreen(){
     $(".godCont").empty();
+//puting in a header
+    $(".godCont").append("<div class='header'>");
+    $(".header").append("<h1 class='title'>");
+    $(".title").text("Shimada Bro's: Rock, Paper, Scissors!");
 //player 1 setup
 //grabbign the animated character
     $(".godCont").append("<div class='player1'>");
@@ -107,24 +106,23 @@ function gameScreen(){
     $(".player1RPS").append("<div class='player1paper'>");
     $(".player1RPS").append("<div class='player1scissors'>");
 //Rock button
-    $(".player1Rock").append("<img src='" + characters[playerCharacter].Rock + "'>")
+    $(".player1Rock").append("<img class='icon' src='" + characters[playerCharacter].Rock + "'>")
     $(".player1Rock").append("<p class='player1RockValue'>");
     $(".player1RockValue").text("Rock");
 //Paper button
-    $(".player1paper").append("<img src='" + characters[playerCharacter].Paper + "'>")
+    $(".player1paper").append("<img class='icon' src='" + characters[playerCharacter].Paper + "'>")
     $(".player1paper").append("<p class='player1PaperValue'>");
     $(".player1PaperValue").text("Paper");
 //Scissors button
-    $(".player1scissors").append("<img src='" + characters[playerCharacter].Scissors + "'>")
+    $(".player1scissors").append("<img class='icon' src='" + characters[playerCharacter].Scissors + "'>")
     $(".player1scissors").append("<p class='player1ScissorsValue'>");
     $(".player1ScissorsValue").text("Scissors");
-
 
 //player 2 setup
 //grabbign the animated character
     $(".godCont").append("<div class='player2'>");
     $(".player2").append("<div class='hero2Peach'>");
-    $(".heroPeach").append("<video class='player2Peach' autoplay muted loop>");
+    $(".hero2Peach").append("<video class='player2Peach' autoplay muted loop>");
     $(".player2Peach").append("<source id='player2PeachSrc' src='" + characters[playerCharacter].Peach + "'>");
 //creating zones form my RPS icons
     $(".player2").append("<div class='player2RPS'>");
@@ -132,17 +130,16 @@ function gameScreen(){
     $(".player2RPS").append("<div class='player2paper'>");
     $(".player2RPS").append("<div class='player2scissors'>");
 //Rock button
-    $(".player2Rock").append("<img src='" + characters[playerCharacter].Rock + "'>")
+    $(".player2Rock").append("<img class='icon' src='" + characters[playerCharacter].Rock + "'>")
     $(".player2Rock").append("<p class='player2RockValue'>");
     $(".player2RockValue").text("Rock");
 //Paper button
-    $(".player2paper").append("<img src='" + characters[playerCharacter].Paper + "'>")
+    $(".player2paper").append("<img class='icon' src='" + characters[playerCharacter].Paper + "'>")
     $(".player2paper").append("<p class='player2PaperValue'>");
     $(".player2PaperValue").text("Paper");
 //Scissors button
-    $(".player2scissors").append("<img src='" + characters[playerCharacter].Scissors + "'>")
+    $(".player2scissors").append("<img class='icon' src='" + characters[playerCharacter].Scissors + "'>")
     $(".player2scissors").append("<p class='player2ScissorsValue'>");
     $(".player2ScissorsValue").text("Scissors");
 }
-//on click of the submit button we load the next page with the chosen assets
 })

@@ -10,7 +10,7 @@ body{
     width: 100%;
     background-color: rgb(128, 107, 79);
     border-style: solid;
-    border-bottom-width: 1em;
+    border-bottom-width: .5em;
     color: white;
     text-align: center;
     margin-bottom: 3em;
@@ -30,6 +30,7 @@ h1{
     color: white;
     text-align: center;
     margin-top: 3em;
+    padding: 1em 0;
 }
 h6{
     font-size: 1em;
@@ -57,3 +58,35 @@ h2{
     font-size: 3.5em;
 }
 /* this section styles the main screen section */
+
+/* this section styles the game screen */
+.player1{
+    width: 30%;
+    float: left;
+}
+.player2{
+    width: 30%;
+    float: right;
+}
+.player1RPS, .player2RPS{
+    width: 100%;
+}
+.player1Rock, .player1paper, .player1scissors,
+.player2Rock, .player2paper, .player2scissors{
+    width: 33.3%;
+    float: left;
+}
+.icon{
+    display: block;
+    width: 90%;
+    margin: 0 2%;
+}
+.heroPeach, .hero2Peach{
+    display: block;
+    width: 60%;
+    margin: 2em 20%;
+}
+.player1Peach, .player2Peach{
+    display:block;
+    width: 100%;
+}
