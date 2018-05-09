@@ -1,0 +1,59 @@
+body{
+    background-color: aqua;
+}
+.godCont{
+    width: 100%;
+    background-color: aqua;
+}
+/* everything here is pretty much for the front page */
+.header{
+    width: 100%;
+    background-color: rgb(128, 107, 79);
+    border-style: solid;
+    border-bottom-width: 1em;
+    color: white;
+    text-align: center;
+    margin-bottom: 3em;
+    float: left;
+}
+h1{
+    font-size: 4em;
+    text-align: center;
+}
+.footer{
+    width: 100%;
+    background-color: rgb(128, 107, 79);
+    position: fixed;
+    bottom: 0;
+    border-style: solid;
+    border-top-width: 1em;
+    color: white;
+    text-align: center;
+    margin-top: 3em;
+}
+h6{
+    font-size: 1em;
+    text-align: center;
+}
+.leftBro, .rightBro{
+    margin: 4em auto;
+    float: left;
+    width: 30%;
+}
+.rightVid, .leftVid{
+    width: 100%;
+}
+.start{
+    width: 40%;
+    margin: 10em auto;
+    float: left;
+    padding: 4em;
+    background-color: silver;
+    border: black;
+    color: black;
+    border-style: solid;
+}
+h2{
+    font-size: 3.5em;
+}
+/* this section styles the main screen section */
