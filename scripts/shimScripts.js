@@ -1,27 +1,45 @@
 $(document).ready(function() {
-//seting up the landing page and start button functionality
+//////////////////////////////////////////////////////////////////FIRE BASE////////////////////////////////////////////////////////////////////////////////////////////
+var config = {
+    apiKey: "AIzaSyD1BtlOHUaCZjFJ-no_mopkv7rWCJMTQC4",
+    authDomain: "shimrps.firebaseapp.com",
+    databaseURL: "https://shimrps.firebaseio.com",
+    projectId: "shimrps",
+    storageBucket: "shimrps.appspot.com",
+    messagingSenderId: "583323616956"
+};
+
+firebase.initializeApp(config);
+
+var database = firebase.database();
+var gamesRef = database.ref("/Games");
+var counterRef = database.ref("/Counter")
+var connectedRef = database.ref(".info/connected");
+///////////////////////////////////////////////////////////////////LANDING PAGE/////////////////////////////////////////////////////////////////////////////////////
+    $("body").append("<container class='godCont'>")
+
 function frontPage(){
-//puting in a header
+
     $(".godCont").append("<div class='header'>");
     $(".header").append("<h1 class='title'>");
     $(".title").text("Shimada Bro's: Rock, Paper, Scissors!");
-//puting in our left show video
+
     $(".godCont").append("<div class='leftBro'>");
     $(".leftBro").append("<video class='leftVid' autoplay muted loop>");
     $(".leftVid").append("<source id='leftSrc' src='SBRPS/Animations/GenjiAnimationAqua.mp4'>");
-//our start button for mving to the main game screen
+
     $(".godCont").append("<button class='start'>");
     $(".start").append("<h2 class='forStart'>");
     $(".forStart").text("START!");
-//putin in our right show video
+
     $(".godCont").append("<div class='rightBro'>");
     $(".rightBro").append("<video class='rightVid' autoplay muted loop>");
     $(".rightVid").append("<source id='leftSrc' src='SBRPS/Animations/HanzoAnimationAqua.mp4' type='video/mp4'>");
-//puttin in some music
+
     $("body").append("<div class='music'>");
     $(".music").append("<audio id='forMusic' autoplay loop>");
     $("#forMusic").append("<source id='src' src='SBRPS/SoundEffects/MainMusic.mp3'>");
-//puttin in a footer for some extra info 
+
     $("body").append("<div class='footer'>");
     $(".footer").append("<h6 class='forFooter'>");
     $(".forFooter").text("Created by: Ian 'MaddBuddha' Price");
@@ -29,26 +47,28 @@ function frontPage(){
 frontPage();
 $("body").on("click", ".start", function(){
     $(".godCont").empty();
-    document.getElementById("forMusic").play();
+    // document.getElementById("forMusic").play();
     mainScreen();
 })
-//variables in other js file
+
+//////////////////////////////////////////////////////////////////CHARACTER SELECT//////////////////////////////////////////////////////////////////////////////
 
 function mainScreen(){
-//puting in a header
+
     $(".godCont").append("<div class='header'>");
     $(".header").append("<h1 class='title'>");
     $(".title").text("Shimada Bro's: Rock, Paper, Scissors!");
 
-//creating and populating divs for player name and character selection  
+    $(".godCont").append("<div class='infoDiv'>");
+    $(".infoDiv").append("<h3 class='info'>");
+    $(".info").text("Enter your name and select your character to start!");
+
     $(".godCont").append("<form class='playerNameInput'>");
     $(".playerNameInput").append("<div class='formRow'>");
     $(".formRow").append("<label id='tag' for='playerName'>");
     $("#tag").text("Choose Your Name!");
-    $(".formRow").append("<input class='formInput' id='playerName' type='text'>");
-    $(".submitId").text("Play!");
+    $(".formRow").append("<input class='formInput' id='playerName' type='text' maxlength='8'>");
 
-//put some picture buttons in my heroChoice section    
 $(".godCont").append("<div class='heroChoice'>");
     for (var i = 0; i < characters.length; i++){
         $(".heroChoice").append("<div class='hero' id='" + characters[i].Name + "'>");
@@ -56,21 +76,44 @@ $(".godCont").append("<div class='heroChoice'>");
         $("#hero" + characters[i].Name).attr("src", characters[i].Picture)
         $("#" + characters[i].Name).attr("data-number", i);
     }
-
-//letting our players know that clicking a hero will send them on
-    $(".godCont").append("<div class='infoDiv'>");
-    $(".infoDiv").append("<h3 class='info'>");
-    $(".info").text("Enter your name into the name field and select your character to start!");
 }
 
 //making sure our player picks a name and a hero before moving to the game screen
 var playerName;
 var playerCharacter;
-$("body").on("click", ".hero", function(){
+var g;
+var gameID = "game" + g;
+
+var player = {
+    PlayerR1HP: 5,
+    PlayerR2HP: 5,
+    PlayerR3HP: 5,
+    PlayerChoice: "RPS-Value"
+}
+function newGame() {
+    gamesRef.push({
+    turn: 1,
+    empty: true,
+    NepalPics: [],
+    round1: true,
+    round2: false,
+    round3: false,
+    player1: "eh",
+    player2: "eh",
+    GameID: g
+    })
+}
+
+$("body").on("click", ".hero", function(event){
+    event.preventDefault();
     var name = $("#playerName").val().trim();
-    console.log(Boolean(name));
     if (name == false){
         $(".godCont").empty();
+
+        $(".godCont").append("<div class='header'>");
+        $(".header").append("<h1 class='title'>");
+        $(".title").text("Shimada Bro's: Rock, Paper, Scissors!");
+
         $(".godCont").append("<div class='noName'>");
         $(".noName").append("<h2 class='pickName'>");
         $(".pickName").text("Pick a name or you can't play.");
@@ -81,65 +124,81 @@ $("body").on("click", ".hero", function(){
             mainScreen();
         })
     } else {
-        playerName = $("#playerName").val().trim();
-        playerCharacter = $(this).attr("data-number");
-        gameScreen();
-    }
-})
+        var x;
+        conterRef.ref().push({
+            counter: 1
+        })
+        conterRef.on("child_added", function(snapshot){
+            g = snapshot.val().counterRef
+            conterRef.ref().update({
+                counter: g++
+            });
+        })
+        newGame()
+        gamesRef.on("child_added", function(snapshot){
+            x = snapshot.val()   
+            snapshot.ref.update({ player1: player })
+        })
 
+        // playerName = name;
+        // playerCharacter = $(this).attr("data-number");
+        // // gameScreen();
+        // newPlayer();
+        }
+})
+console.log(x)
+
+/////////////////////////////////////////////////////////////////////GAME SCREEN///////////////////////////////////////////////////////////////////////////
 //creating and populating the actual game screen for RPS
 function gameScreen(){
     $(".godCont").empty();
+    $("body").css("background-image",  "URL('SBRPS/NepalPictures/NepalA.jpg')"); 
 //puting in a header
     $(".godCont").append("<div class='header'>");
     $(".header").append("<h1 class='title'>");
     $(".title").text("Shimada Bro's: Rock, Paper, Scissors!");
 //player 1 setup
-//grabbign the animated character
+//putting in player name
     $(".godCont").append("<div class='player1'>");
+    $(".player1").append("<div class='chosenName' id='player1ChosenName'>");
+    $("#player1ChosenName").append("<h4 id='forNamePlayer1'>");
+    $("#forNamePlayer1").text(playerName);
+//grabbign the animated character
     $(".player1").append("<div class='heroPeach'>");
     $(".heroPeach").append("<video class='player1Peach' autoplay muted loop>");
     $(".player1Peach").append("<source id='player1PeachSrc' src='" + characters[playerCharacter].Peach + "'>");
-//creating zones form my RPS icons
+//creating zone form my RPS icon divs
     $(".player1").append("<div class='player1RPS'>");
-    $(".player1RPS").append("<div class='player1Rock'>");
-    $(".player1RPS").append("<div class='player1paper'>");
-    $(".player1RPS").append("<div class='player1scissors'>");
-//Rock button
-    $(".player1Rock").append("<img class='icon' src='" + characters[playerCharacter].Rock + "'>")
-    $(".player1Rock").append("<p class='player1RockValue'>");
-    $(".player1RockValue").text("Rock");
-//Paper button
-    $(".player1paper").append("<img class='icon' src='" + characters[playerCharacter].Paper + "'>")
-    $(".player1paper").append("<p class='player1PaperValue'>");
-    $(".player1PaperValue").text("Paper");
-//Scissors button
-    $(".player1scissors").append("<img class='icon' src='" + characters[playerCharacter].Scissors + "'>")
-    $(".player1scissors").append("<p class='player1ScissorsValue'>");
-    $(".player1ScissorsValue").text("Scissors");
-
+//makes the divs with icons and appends to rps zone for player 1
+var choices = ["Rock", "Paper", "Scissors"]
+    for (var i = 0; i < choices.length; i++){
+        RPS = choices[i];
+        $(".player1RPS").append("<div class='choiceDiv'  id='player1" + RPS + "'>");
+        $("#player1" + RPS).append("<img class='icon' src='" + characters[playerCharacter][RPS] + "'>")
+        $("#player1" + RPS).attr("RPS-Value", i);
+        $("#player1" + RPS).append("<p class='RPSTitles' id='player1" + RPS + "value'>");
+        $("#player1" + RPS + "value").text(RPS);
+    }
 //player 2 setup
-//grabbign the animated character
+//putting in player name
     $(".godCont").append("<div class='player2'>");
+    $(".player2").append("<div class='chosenName' id='player2ChosenName'>");
+    $("#player2ChosenName").append("<h4 id='forNamePlayer2'>");
+    $("#forNamePlayer2").text(playerName);
+//grabbign the animated character
     $(".player2").append("<div class='hero2Peach'>");
     $(".hero2Peach").append("<video class='player2Peach' autoplay muted loop>");
     $(".player2Peach").append("<source id='player2PeachSrc' src='" + characters[playerCharacter].Peach + "'>");
 //creating zones form my RPS icons
     $(".player2").append("<div class='player2RPS'>");
-    $(".player2RPS").append("<div class='player2Rock'>");
-    $(".player2RPS").append("<div class='player2paper'>");
-    $(".player2RPS").append("<div class='player2scissors'>");
-//Rock button
-    $(".player2Rock").append("<img class='icon' src='" + characters[playerCharacter].Rock + "'>")
-    $(".player2Rock").append("<p class='player2RockValue'>");
-    $(".player2RockValue").text("Rock");
-//Paper button
-    $(".player2paper").append("<img class='icon' src='" + characters[playerCharacter].Paper + "'>")
-    $(".player2paper").append("<p class='player2PaperValue'>");
-    $(".player2PaperValue").text("Paper");
-//Scissors button
-    $(".player2scissors").append("<img class='icon' src='" + characters[playerCharacter].Scissors + "'>")
-    $(".player2scissors").append("<p class='player2ScissorsValue'>");
-    $(".player2ScissorsValue").text("Scissors");
+//makes the divs with icons and appends to rps zone for player 2
+    for (var i = 0; i < choices.length; i++){
+        var RPS = choices[i];
+        $(".player2RPS").append("<div class='choiceDiv' id='player2" + RPS + "'>");
+        $("#player2" + RPS).append("<img class='icon' src='" + characters[playerCharacter][RPS] + "'>")
+        $("#player2" + RPS).attr("RPS-Value", i);
+        $("#player2" + RPS).append("<p class='RPSTitles' id='player2" + RPS + "value'>");
+        $("#player2" + RPS + "value").text(RPS);
+    }
 }
 })
