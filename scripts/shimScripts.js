@@ -99,8 +99,8 @@ function newGame() {
     round1: true,
     round2: false,
     round3: false,
-    player1: "eh",
-    player2: "eh"
+    player1: "emptyp",
+    player2: "emptyp"
     })
 }
 
@@ -127,10 +127,20 @@ $("body").on("click", ".hero", function(event){
         database.ref().once("value", function(snapshot){ 
             if (snapshot.exists() == false){
                 newGame();
-            }
+            } 
         }) 
         gamesRef.on("child_added", function(snapshot){
-            snapshot.ref.update({ player1: player })
+            // for (var i in snapshot.ref.key){
+                for (var i in snapshot.val()){
+                if (i == 'player1' && snapshot.val().player1 == "emptyp"){
+                    snapshot.ref.update({ player1: player })
+                } else if ((i == 'player2' && snapshot.val().player2 == "emptyp" ) &&(typeof(snapshot.val().player1) == "object")){
+                    snapshot.ref.update({ player2: player })
+                } else{
+        //    newGame(); loose
+                }
+            
+            }
         })
         playerName = name;
         playerCharacter = $(this).attr("data-number");
