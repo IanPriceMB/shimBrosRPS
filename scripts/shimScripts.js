@@ -15,6 +15,7 @@ var database = firebase.database();
 var gamesRef = database.ref("/Games");
 var counterRef = database.ref("/Counter")
 var connectedRef = database.ref(".info/connected");
+
 ///////////////////////////////////////////////////////////////////LANDING PAGE/////////////////////////////////////////////////////////////////////////////////////
     $("body").append("<container class='godCont'>")
 
@@ -99,8 +100,7 @@ function newGame() {
     round2: false,
     round3: false,
     player1: "eh",
-    player2: "eh",
-    GameID: g
+    player2: "eh"
     })
 }
 
@@ -124,29 +124,19 @@ $("body").on("click", ".hero", function(event){
             mainScreen();
         })
     } else {
-        var x;
-        conterRef.ref().push({
-            counter: 1
-        })
-        conterRef.on("child_added", function(snapshot){
-            g = snapshot.val().counterRef
-            conterRef.ref().update({
-                counter: g++
-            });
-        })
-        newGame()
+        database.ref().once("value", function(snapshot){ 
+            if (snapshot.exists() == false){
+                newGame();
+            }
+        }) 
         gamesRef.on("child_added", function(snapshot){
-            x = snapshot.val()   
             snapshot.ref.update({ player1: player })
         })
-
-        // playerName = name;
-        // playerCharacter = $(this).attr("data-number");
-        // // gameScreen();
-        // newPlayer();
+        playerName = name;
+        playerCharacter = $(this).attr("data-number");
+        gameScreen();
         }
 })
-console.log(x)
 
 /////////////////////////////////////////////////////////////////////GAME SCREEN///////////////////////////////////////////////////////////////////////////
 //creating and populating the actual game screen for RPS
