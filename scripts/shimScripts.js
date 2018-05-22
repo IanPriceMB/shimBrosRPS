@@ -80,27 +80,21 @@ $(".godCont").append("<div class='heroChoice'>");
 }
 
 //making sure our player picks a name and a hero before moving to the game screen
-var playerName;
-var playerCharacter;
 var g;
 var gameID = "game" + g;
+var gplayerName; 
+var gplayerCharacter;
 
-var player = {
-    PlayerR1HP: 5,
-    PlayerR2HP: 5,
-    PlayerR3HP: 5,
-    PlayerChoice: "RPS-Value"
-}
 function newGame() {
     gamesRef.push({
+    player1: "emptyp",
+    player2: "emptyp",
     turn: 1,
     empty: true,
-    NepalPics: [],
+    NepalPics: ['SBRPS/NepalPictures/NepalA.jpg','SBRPS/NepalPictures/NepalB.jpg','SBRPS/NepalPictures/NepalC.png'],
     round1: true,
     round2: false,
-    round3: false,
-    player1: "emptyp",
-    player2: "emptyp"
+    round3: false
     })
 }
 
@@ -124,33 +118,42 @@ $("body").on("click", ".hero", function(event){
             mainScreen();
         })
     } else {
+        var playerName = name;
+        var playerCharacter = $(this).attr("data-number");
+        gplayerName = name;
+        gplayerCharacter = $(this).attr("data-number");
         database.ref().once("value", function(snapshot){ 
             if (snapshot.exists() == false){
                 newGame();
             } 
         }) 
         gamesRef.on("child_added", function(snapshot){
-            // for (var i in snapshot.ref.key){
+            var player = {
+                PlayerR1HP: 5,
+                PlayerR2HP: 5,
+                PlayerR3HP: 5,
+                PlayerChoice: "RPS-Value",
+                playerName: playerName,
+                playerCharacter: playerCharacter
+            }
                 for (var i in snapshot.val()){
                 if (i == 'player1' && snapshot.val().player1 == "emptyp"){
                     snapshot.ref.update({ player1: player })
+                    gameScreen(snapshot);
                 } else if ((i == 'player2' && snapshot.val().player2 == "emptyp" ) &&(typeof(snapshot.val().player1) == "object")){
-                    snapshot.ref.update({ player2: player })
-                } else{
-        //    newGame(); loose
+                    snapshot.ref.update({ player2: player, empty: false })
+                    gameScreen(snapshot);
+                } else if (i == 'empty' && snapshot.val().empty == false){
+                    newGame(); 
                 }
-            
             }
         })
-        playerName = name;
-        playerCharacter = $(this).attr("data-number");
-        gameScreen();
         }
 })
 
 /////////////////////////////////////////////////////////////////////GAME SCREEN///////////////////////////////////////////////////////////////////////////
 //creating and populating the actual game screen for RPS
-function gameScreen(){
+function gameScreen(snapshot){
     $(".godCont").empty();
     $("body").css("background-image",  "URL('SBRPS/NepalPictures/NepalA.jpg')"); 
 //puting in a header
@@ -162,11 +165,11 @@ function gameScreen(){
     $(".godCont").append("<div class='player1'>");
     $(".player1").append("<div class='chosenName' id='player1ChosenName'>");
     $("#player1ChosenName").append("<h4 id='forNamePlayer1'>");
-    $("#forNamePlayer1").text(playerName);
+    $("#forNamePlayer1").text(snapshot.val().player1.playerName);
 //grabbign the animated character
     $(".player1").append("<div class='heroPeach'>");
     $(".heroPeach").append("<video class='player1Peach' autoplay muted loop>");
-    $(".player1Peach").append("<source id='player1PeachSrc' src='" + characters[playerCharacter].Peach + "'>");
+    $(".player1Peach").append("<source id='player1PeachSrc' src='" + characters[snapshot.val().player1.playerCharacter].Peach + "'>");
 //creating zone form my RPS icon divs
     $(".player1").append("<div class='player1RPS'>");
 //makes the divs with icons and appends to rps zone for player 1
@@ -174,7 +177,7 @@ var choices = ["Rock", "Paper", "Scissors"]
     for (var i = 0; i < choices.length; i++){
         RPS = choices[i];
         $(".player1RPS").append("<div class='choiceDiv'  id='player1" + RPS + "'>");
-        $("#player1" + RPS).append("<img class='icon' src='" + characters[playerCharacter][RPS] + "'>")
+        $("#player1" + RPS).append("<img class='icon' src='" + characters[snapshot.val().player1.playerCharacter][RPS] + "'>")
         $("#player1" + RPS).attr("RPS-Value", i);
         $("#player1" + RPS).append("<p class='RPSTitles' id='player1" + RPS + "value'>");
         $("#player1" + RPS + "value").text(RPS);
@@ -184,18 +187,18 @@ var choices = ["Rock", "Paper", "Scissors"]
     $(".godCont").append("<div class='player2'>");
     $(".player2").append("<div class='chosenName' id='player2ChosenName'>");
     $("#player2ChosenName").append("<h4 id='forNamePlayer2'>");
-    $("#forNamePlayer2").text(playerName);
+    $("#forNamePlayer2").text(snapshot.val().player2.playerName);
 //grabbign the animated character
     $(".player2").append("<div class='hero2Peach'>");
     $(".hero2Peach").append("<video class='player2Peach' autoplay muted loop>");
-    $(".player2Peach").append("<source id='player2PeachSrc' src='" + characters[playerCharacter].Peach + "'>");
+    $(".player2Peach").append("<source id='player2PeachSrc' src='" +characters[snapshot.val().player2.playerCharacter].Peach + "'>");
 //creating zones form my RPS icons
     $(".player2").append("<div class='player2RPS'>");
 //makes the divs with icons and appends to rps zone for player 2
     for (var i = 0; i < choices.length; i++){
         var RPS = choices[i];
         $(".player2RPS").append("<div class='choiceDiv' id='player2" + RPS + "'>");
-        $("#player2" + RPS).append("<img class='icon' src='" + characters[playerCharacter][RPS] + "'>")
+        $("#player2" + RPS).append("<img class='icon' src='" + characters[snapshot.val().player2.playerCharacter][RPS] + "'>")
         $("#player2" + RPS).attr("RPS-Value", i);
         $("#player2" + RPS).append("<p class='RPSTitles' id='player2" + RPS + "value'>");
         $("#player2" + RPS + "value").text(RPS);
