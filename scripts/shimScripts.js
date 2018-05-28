@@ -80,11 +80,6 @@ $(".godCont").append("<div class='heroChoice'>");
 }
 
 //making sure our player picks a name and a hero before moving to the game screen
-var g;
-var gameID = "game" + g;
-var gplayerName; 
-var gplayerCharacter;
-
 function newGame() {
     gamesRef.push({
     player1: "emptyp",
@@ -98,6 +93,7 @@ function newGame() {
     })
 }
 
+var inGame;
 $("body").on("click", ".hero", function(event){
     event.preventDefault();
     var name = $("#playerName").val().trim();
@@ -120,8 +116,6 @@ $("body").on("click", ".hero", function(event){
     } else {
         var playerName = name;
         var playerCharacter = $(this).attr("data-number");
-        gplayerName = name;
-        gplayerCharacter = $(this).attr("data-number");
         database.ref().once("value", function(snapshot){ 
             if (snapshot.exists() == false){
                 newGame();
@@ -136,17 +130,22 @@ $("body").on("click", ".hero", function(event){
                 playerName: playerName,
                 playerCharacter: playerCharacter
             }
+            if(!inGame){
                 for (var i in snapshot.val()){
-                if (i == 'player1' && snapshot.val().player1 == "emptyp"){
-                    snapshot.ref.update({ player1: player })
-                    gameScreen(snapshot);
-                } else if ((i == 'player2' && snapshot.val().player2 == "emptyp" ) &&(typeof(snapshot.val().player1) == "object")){
-                    snapshot.ref.update({ player2: player, empty: false })
-                    gameScreen(snapshot);
-                } else if (i == 'empty' && snapshot.val().empty == false){
-                    newGame(); 
+                    if (i == 'player1' && snapshot.val().player1 == "emptyp"){
+                        snapshot.ref.update({ player1: player })
+                        gameScreen(snapshot);
+                        inGame = true;
+                    } else if ((i == 'player2' && snapshot.val().player2 == "emptyp" ) &&(typeof(snapshot.val().player1) == "object")){
+                        snapshot.ref.update({ player2: player, empty: false })
+                        gameScreen(snapshot);
+                        inGame = true;
+                    } else if (i == 'empty' && snapshot.val().empty == false){
+                        newGame(); 
+                    }
                 }
-            }
+
+            }            
         })
         }
 })
