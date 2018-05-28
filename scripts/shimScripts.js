@@ -116,42 +116,60 @@ $("body").on("click", ".hero", function(event){
     } else {
         var playerName = name;
         var playerCharacter = $(this).attr("data-number");
-        database.ref().once("value", function(snapshot){ 
-            if (snapshot.exists() == false){
+        database.ref().once("value", function(dsnapshot){ 
+            if (dsnapshot.exists() == false){
                 newGame();
             } 
+
         }) 
         gamesRef.on("child_added", function(snapshot){
-            var player = {
-                PlayerR1HP: 5,
-                PlayerR2HP: 5,
-                PlayerR3HP: 5,
-                PlayerChoice: "RPS-Value",
-                playerName: playerName,
-                playerCharacter: playerCharacter
-            }
-            if(!inGame){
-                for (var i in snapshot.val()){
-                    if (i == 'player1' && snapshot.val().player1 == "emptyp"){
-                        snapshot.ref.update({ player1: player })
-                        inGame = true;
-                        setTimeout(function(){gameScreen(snapshot);}, 3000);
-                    } else if ((i == 'player2' && snapshot.val().player2 == "emptyp" ) &&(typeof(snapshot.val().player1) == "object")){
-                        snapshot.ref.update({ player2: player, empty: false })
-                        inGame = true;
-                        setTimeout(function(){gameScreen(snapshot);}, 3000);
-                    } else if (i == 'empty' && snapshot.val().empty == false){
-                        newGame(); 
-                    }
+            database.ref().once("value", function(dsnapshot){
+                console.log("made it here")
+                var player = {
+                    PlayerR1HP: 5,
+                    PlayerR2HP: 5,
+                    PlayerR3HP: 5,
+                    PlayerChoice: "RPS-Value",
+                    playerName: playerName,
+                    playerCharacter: playerCharacter
                 }
-            } 
-            if(typeof(snapshot.val().player2) == "object" && typeof(snapshot.val().player1) == "object"){
-                gameScreen(snapshot)
-            }           
+                if(!inGame){
+                    console.log("not in game")
+                    for (var j in dsnapshot.val()){
+                        console.log("first 4")
+                        console.log(dsnapshot.val())
+                        console.log(dsnapshot.val()[j])
+                        console.log(Object.keys(dsnapshot.val()[j]))
+                        console.log(typeof(dsnapshot.val()[j]))
+                        console.log(typeof(dsnapshot.val()))
+                        const {games: {}} = dsnapshot.val();
+                        console.log(games)
+                        if (dsnapshot.val()[j][empty] === true){
+                            console.log("checking empties")
+                            for (var i in snapshot.val()){
+                                if (i == 'player1' && snapshot.val().player1 == "emptyp"){
+                                    snapshot.ref.update({ player1: player, empty: false })
+                                    inGame = true;
+                                } else if ((i == 'player2' && snapshot.val().player2 == "emptyp" ) && (typeof(snapshot.val().player1) == "object")){
+                                    snapshot.ref.update({ player2: player, empty: false })
+                                    inGame = true;
+                                } else if (i == 'empty' && snapshot.val().empty == false){
+                                    newGame(); 
+                                }                             
+                            }
+                        }
+                    }
+                }   
+            })       
         })
     }
 })
-
+//on child added check if game is full if it is render game and players
+gamesRef.on("child_added", function(snapshot){
+    if(typeof(snapshot.val().player1) == "object" && typeof(snapshot.val().player2) == "object"){
+        gameScreen(snapshot);
+    } 
+})
 /////////////////////////////////////////////////////////////////////GAME SCREEN///////////////////////////////////////////////////////////////////////////
 //creating and populating the actual game screen for RPS
 function gameScreen(snapshot){
