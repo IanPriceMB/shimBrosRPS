@@ -134,20 +134,22 @@ $("body").on("click", ".hero", function(event){
                 for (var i in snapshot.val()){
                     if (i == 'player1' && snapshot.val().player1 == "emptyp"){
                         snapshot.ref.update({ player1: player })
-                        gameScreen(snapshot);
                         inGame = true;
+                        setTimeout(function(){gameScreen(snapshot);}, 3000);
                     } else if ((i == 'player2' && snapshot.val().player2 == "emptyp" ) &&(typeof(snapshot.val().player1) == "object")){
                         snapshot.ref.update({ player2: player, empty: false })
-                        gameScreen(snapshot);
                         inGame = true;
+                        setTimeout(function(){gameScreen(snapshot);}, 3000);
                     } else if (i == 'empty' && snapshot.val().empty == false){
                         newGame(); 
                     }
                 }
-
-            }            
+            } 
+            if(typeof(snapshot.val().player2) == "object" && typeof(snapshot.val().player1) == "object"){
+                gameScreen(snapshot)
+            }           
         })
-        }
+    }
 })
 
 /////////////////////////////////////////////////////////////////////GAME SCREEN///////////////////////////////////////////////////////////////////////////
