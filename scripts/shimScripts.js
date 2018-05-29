@@ -92,11 +92,12 @@ function newGame() {
     round3: false
     })
 }
-
+// this section is for ensurein gthe player picks a name and a character to play as
 var inGame;
+var name;
 $("body").on("click", ".hero", function(event){
     event.preventDefault();
-    var name = $("#playerName").val().trim();
+    name = $("#playerName").val().trim();
     if (name == false){
         $(".godCont").empty();
 
@@ -148,14 +149,49 @@ $("body").on("click", ".hero", function(event){
 })
 
 let playing = false;
-//on child added check if game is full if it is render game and players
-gamesRef.on("child_added", function(snapshot){
-    console.log(snapshot.val())
-    if(snapshot.val().empty === false && playing === false){
-        gameScreen(snapshot);
-        playing = true;
-    } 
-})
+// firebase.database().ref('/Games').orderByChild('empty').equalTo(false).on("child_added", function(snapshot) {
+//     console.log(snapshot.val())
+// });
+//on child added check if game is full if it is render game and players this works for player 2 not player 1 though
+$('body').on('click', '.hero', function(){
+    setTimeout(function(){
+        firebase.database().ref('/Games').orderByChild('empty').equalTo(false).on('value', function(snapshot){
+            console.log(snapshot.val())
+            for(j in snapshot.val()){
+                console.log('in j')
+                console.log(snapshot.val()[j])
+                hoiHoi = snapshot.val()[j]
+                console.log(hoiHoi.player1)
+                console.log(hoiHoi.player1.playerName)
+                console.log(name)
+                console.log(playing)
+                if(
+                    playing === false && 
+                    ((hoiHoi.player1.playerName == name && typeof(hoiHoi.player2) == 'object') || 
+                    (hoiHoi.player2.playerName == name && typeof(hoiHoi.player1) == 'object'))
+                ){
+                    console.log('yay, baby!')
+                    let allTheStuff = {
+                        player1: {
+                            playerName: hoiHoi.player1.playerName,
+                            playerCharacter:  hoiHoi.player1.playerCharacter
+                        },
+                        player2: {
+                            playerName: hoiHoi.player2.playerName,
+                            playerCharacter:  hoiHoi.player2.playerCharacter
+                        }
+                    }
+                    gameScreen(allTheStuff);
+                    playing = true;
+                } 
+            }
+        })
+    }, 5000)
+});
+//I need to add more defensive coding so that players only load into games with their name matching the appropriate player 
+//slot elsewise everybody just loads into the first game in the database.
+//playing = true stops from each added child restarting everybodies game
+//once all the defensive coding is figured out i just have to make the RPS game logic which is the easy part
 /////////////////////////////////////////////////////////////////////GAME SCREEN///////////////////////////////////////////////////////////////////////////
 //creating and populating the actual game screen for RPS
 function gameScreen(snapshot){
@@ -170,11 +206,11 @@ function gameScreen(snapshot){
     $(".godCont").append("<div class='player1'>");
     $(".player1").append("<div class='chosenName' id='player1ChosenName'>");
     $("#player1ChosenName").append("<h4 id='forNamePlayer1'>");
-    $("#forNamePlayer1").text(snapshot.val().player1.playerName);
+    $("#forNamePlayer1").text(snapshot.player1.playerName);
 //grabbign the animated character
     $(".player1").append("<div class='heroPeach'>");
     $(".heroPeach").append("<video class='player1Peach' autoplay muted loop>");
-    $(".player1Peach").append("<source id='player1PeachSrc' src='" + characters[snapshot.val().player1.playerCharacter].Peach + "'>");
+    $(".player1Peach").append("<source id='player1PeachSrc' src='" + characters[snapshot.player1.playerCharacter].Peach + "'>");
 //creating zone form my RPS icon divs
     $(".player1").append("<div class='player1RPS'>");
 //makes the divs with icons and appends to rps zone for player 1
@@ -182,7 +218,7 @@ var choices = ["Rock", "Paper", "Scissors"]
     for (var i = 0; i < choices.length; i++){
         RPS = choices[i];
         $(".player1RPS").append("<div class='choiceDiv'  id='player1" + RPS + "'>");
-        $("#player1" + RPS).append("<img class='icon' src='" + characters[snapshot.val().player1.playerCharacter][RPS] + "'>")
+        $("#player1" + RPS).append("<img class='icon' src='" + characters[snapshot.player1.playerCharacter][RPS] + "'>")
         $("#player1" + RPS).attr("RPS-Value", i);
         $("#player1" + RPS).append("<p class='RPSTitles' id='player1" + RPS + "value'>");
         $("#player1" + RPS + "value").text(RPS);
@@ -192,18 +228,18 @@ var choices = ["Rock", "Paper", "Scissors"]
     $(".godCont").append("<div class='player2'>");
     $(".player2").append("<div class='chosenName' id='player2ChosenName'>");
     $("#player2ChosenName").append("<h4 id='forNamePlayer2'>");
-    $("#forNamePlayer2").text(snapshot.val().player2.playerName);
+    $("#forNamePlayer2").text(snapshot.player2.playerName);
 //grabbign the animated character
     $(".player2").append("<div class='hero2Peach'>");
     $(".hero2Peach").append("<video class='player2Peach' autoplay muted loop>");
-    $(".player2Peach").append("<source id='player2PeachSrc' src='" +characters[snapshot.val().player2.playerCharacter].Peach + "'>");
+    $(".player2Peach").append("<source id='player2PeachSrc' src='" +characters[snapshot.player2.playerCharacter].Peach + "'>");
 //creating zones form my RPS icons
     $(".player2").append("<div class='player2RPS'>");
 //makes the divs with icons and appends to rps zone for player 2
     for (var i = 0; i < choices.length; i++){
         var RPS = choices[i];
         $(".player2RPS").append("<div class='choiceDiv' id='player2" + RPS + "'>");
-        $("#player2" + RPS).append("<img class='icon' src='" + characters[snapshot.val().player2.playerCharacter][RPS] + "'>")
+        $("#player2" + RPS).append("<img class='icon' src='" + characters[snapshot.player2.playerCharacter][RPS] + "'>")
         $("#player2" + RPS).attr("RPS-Value", i);
         $("#player2" + RPS).append("<p class='RPSTitles' id='player2" + RPS + "value'>");
         $("#player2" + RPS + "value").text(RPS);
