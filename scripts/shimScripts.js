@@ -123,51 +123,37 @@ $("body").on("click", ".hero", function(event){
 
         }) 
         gamesRef.on("child_added", function(snapshot){
-            database.ref().once("value", function(dsnapshot){
-                console.log("made it here")
-                var player = {
-                    PlayerR1HP: 5,
-                    PlayerR2HP: 5,
-                    PlayerR3HP: 5,
-                    PlayerChoice: "RPS-Value",
-                    playerName: playerName,
-                    playerCharacter: playerCharacter
+            var player = {
+                PlayerR1HP: 5,
+                PlayerR2HP: 5,
+                PlayerR3HP: 5,
+                PlayerChoice: "RPS-Value",
+                playerName: playerName,
+                playerCharacter: playerCharacter
+            }
+            if(!inGame){
+                for (var i in snapshot.val()){
+                    if (i == 'player1' && snapshot.val().player1 == "emptyp" && snapshot.val().empty){
+                        snapshot.ref.update({ player1: player})
+                        inGame = true;
+                    } else if ((i == 'player2' && snapshot.val().player2 == "emptyp" ) && (typeof(snapshot.val().player1) == "object" && snapshot.val().empty)){
+                        snapshot.ref.update({ player2: player, empty: false })
+                        inGame = true;
+                        newGame();
+                    }                            
                 }
-                if(!inGame){
-                    console.log("not in game")
-                    for (var j in dsnapshot.val()){
-                        console.log("first 4")
-                        console.log(dsnapshot.val())
-                        console.log(dsnapshot.val()[j])
-                        console.log(Object.keys(dsnapshot.val()[j]))
-                        console.log(typeof(dsnapshot.val()[j]))
-                        console.log(typeof(dsnapshot.val()))
-                        const {games: {}} = dsnapshot.val();
-                        console.log(games)
-                        if (dsnapshot.val()[j][empty] === true){
-                            console.log("checking empties")
-                            for (var i in snapshot.val()){
-                                if (i == 'player1' && snapshot.val().player1 == "emptyp"){
-                                    snapshot.ref.update({ player1: player, empty: false })
-                                    inGame = true;
-                                } else if ((i == 'player2' && snapshot.val().player2 == "emptyp" ) && (typeof(snapshot.val().player1) == "object")){
-                                    snapshot.ref.update({ player2: player, empty: false })
-                                    inGame = true;
-                                } else if (i == 'empty' && snapshot.val().empty == false){
-                                    newGame(); 
-                                }                             
-                            }
-                        }
-                    }
-                }   
-            })       
+            }        
         })
     }
 })
+
+let playing = false;
 //on child added check if game is full if it is render game and players
 gamesRef.on("child_added", function(snapshot){
-    if(typeof(snapshot.val().player1) == "object" && typeof(snapshot.val().player2) == "object"){
+    console.log(snapshot.val())
+    if(snapshot.val().empty === false && playing === false){
         gameScreen(snapshot);
+        playing = true;
     } 
 })
 /////////////////////////////////////////////////////////////////////GAME SCREEN///////////////////////////////////////////////////////////////////////////
